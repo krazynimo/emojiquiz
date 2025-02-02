@@ -33,11 +33,11 @@
       width: 80%;
     }
     .tile {
-      width: 300px;
-      height: 200px;
+      width: 300px; /* Increased width */
+      height: 200px; /* Increased height */
       background: white;
       color: black;
-      font-size: 3vw;
+      font-size: 6vw; /* Increased font size for emojis */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -51,14 +51,14 @@
       transform: scale(1.05); /* Add hover effect */
     }
     .answer {
-      font-size: 3vw;
+      font-size: 2.5vw;
       font-weight: bold;
       display: none;
       background: #00cc66;
       color: white;
-      padding: 20px;
+      padding: 15px;
       border-radius: 15px;
-      width: 300px;
+      width: 300px; /* Match tile width */
       text-align: center;
       animation: fadeIn 0.5s ease; /* Add fade-in animation */
     }
@@ -106,7 +106,7 @@
 <body>
   <h1>Emoji Quiz Battle 🎭</h1>
   <div class="quiz-container">
-    <div class="tile" id="emojiTile">Tap "Next Question"</div>
+    <div class="tile" id="emojiTile"></div>
     <div class="timer" id="timer">Time Left: 30s</div>
     <div class="answer" id="answerTile"></div>
     <div class="buttons">
@@ -117,7 +117,7 @@
   </div>
 
   <!-- Audio elements for sound effects -->
-  <audio id="correctSound" src="assets/audiofiles/congrats.mp3"></audio>
+  <audio id="correctSound" src="https://assets.mixkit.co/active_storage/sfx/2216/2216-preview.mp3"></audio>
   <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2218/2218-preview.mp3"></audio>
   <audio id="timeUpSound" src="https://assets.mixkit.co/active_storage/sfx/2217/2217-preview.mp3"></audio>
 
