@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Emoji Quiz Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      background: linear-gradient(to right, #003366, #004080);
+      color: white;
+      text-align: center;
+    }
+    h1 {
+      font-size: 4vw;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    }
+    .quiz-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2vw;
+      width: 80%;
+    }
+    .tile {
+      width: 300px;
+      height: 200px;
+      background: white;
+      color: black;
+      font-size: 3vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      font-weight: bold;
+      user-select: none;
+      transition: transform 0.5s ease;
+    }
+    .tile:hover {
+      transform: scale(1.05); /* Add hover effect */
+    }
+    .answer {
+      font-size: 3vw;
+      font-weight: bold;
+      display: none;
+      background: #00cc66;
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 300px;
+      text-align: center;
+      animation: fadeIn 0.5s ease; /* Add fade-in animation */
+    }
+    .timer {
+      font-size: 3vw;
+      font-weight: bold;
+      padding: 10px;
+      background: black;
+      color: white;
+      border-radius: 10px;
+      margin-top: 10px;
+      animation: pulse 1s infinite; /* Add pulse animation */
+    }
+    .buttons {
+      display: flex;
+      gap: 20px;
+    }
+    .btn {
+      padding: 15px 30px;
+      font-size: 2vw;
+      background: #ff1744;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn:hover {
+      background: #d500f9;
+      transform: scale(1.1); /* Add hover effect */
+    }
+
+    /* Keyframes for animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Emoji Quiz Battle 🎭</h1>
+  <div class="quiz-container">
+    <div class="tile" id="emojiTile">Tap "Next Question"</div>
+    <div class="timer" id="timer">Time Left: 30s</div>
+    <div class="answer" id="answerTile"></div>
+    <div class="buttons">
+      <button class="btn" onclick="revealAnswer()">Reveal Answer</button>
+      <button class="btn" onclick="addTime()">Add 10 Seconds</button>
+      <button class="btn" onclick="nextQuestion()">Next Question</button>
+    </div>
+  </div>
+
+  <!-- Audio elements for sound effects -->
+  <audio id="correctSound" src="assets/audiofiles/congrats.mp3"></audio>
+  <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2218/2218-preview.mp3"></audio>
+  <audio id="timeUpSound" src="https://assets.mixkit.co/active_storage/sfx/2217/2217-preview.mp3"></audio>
+
+  <script>
+    const quizData = [
+      { emoji: "💂‍♂️🎖️", answer: "Army Officer" },
+      { emoji: "🚗⛽", answer: "Long Drive" },
+      { emoji: "🎤🔥", answer: "Karaoke Night" },
+      { emoji: "🎭🎨", answer: "Pictionary" },
+      { emoji: "🍺🍗", answer: "Mess Party" },
+      { emoji: "📞💔", answer: "Missing Wife's Call" },
+      { emoji: "💼🛫", answer: "Posting Order" },
+      { emoji: "⏰😱", answer: "Overslept Parade" },
+      { emoji: "🏕️🔥", answer: "Bonfire Night" },
+      { emoji: "🏋️🥩", answer: "Gym & Diet" }
+    ];
+
+    let timerValue = 30;
+    let timerInterval;
+    let currentQuestionIndex = -1;
+
+    // Play sound function
+    function playSound(soundId) {
+      const sound = document.getElementById(soundId);
+      sound.currentTime = 0; // Reset sound to start
+      sound.play();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerValue = 30;
+      document.getElementById("timer").innerText = `Time Left: ${timerValue}s`;
+      timerInterval = setInterval(() => {
+        if (timerValue > 0) {
+          timerValue--;
+          document.getElementById("timer").innerText = `Time Left: ${timerValue}s`;
+        } else {
+          clearInterval(timerInterval);
+          document.getElementById("timer").innerText = "Time's Up!";
+          playSound("timeUpSound"); // Play time-up sound
+        }
+      }, 1000);
+    }
+
+    function addTime() {
+      timerValue += 10;
+      document.getElementById("timer").innerText = `Time Left: ${timerValue}s`;
+      playSound("clickSound"); // Play click sound
+    }
+
+    function revealAnswer() {
+      document.getElementById("answerTile").style.display = "block";
+      clearInterval(timerInterval);
+      triggerConfetti();
+      playSound("correctSound"); // Play correct answer sound
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex = (currentQuestionIndex + 1) % quizData.length;
+      document.getElementById("emojiTile").innerText = quizData[currentQuestionIndex].emoji;
+      document.getElementById("answerTile").innerText = quizData[currentQuestionIndex].answer;
+      document.getElementById("answerTile").style.display = "none";
+      startTimer();
+      playSound("clickSound"); // Play click sound
+    }
+
+    function triggerConfetti() {
+      confetti({ 
+        particleCount: 150, 
+        spread: 120, 
+        origin: { y: 0.6 } 
+      });
+    }
+  </script>
+</body>
+</html>
